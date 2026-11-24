@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ivory Field – concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbf8f4; --surface:#ffffff; --ink:#1f1a17; --muted:#6f655d; --line:#e7dfd6;
+  --accent:#7a5c3e; --accent-soft:#f3ebe1; --ok:#2f6b4a; --warn:#9a5b12;
+  --fix:#6b2fa0; --fix-soft:#f1e8f8;
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Jost",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;font-size:15px;line-height:1.55;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+img{display:block;max-width:100%}
+.wrap{max-width:1280px;margin:0 auto;padding:0 max(16px,3vw)}
+
+/* demo ribbon */
+.demo{background:var(--fix);color:#fff;font-size:12.5px;text-align:center;padding:6px 16px;letter-spacing:.02em}
+.demo b{font-weight:500}
+
+/* announcement */
+.announce{background:var(--ink);color:#f5efe8;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:8px 16px}
+.announce span{opacity:.55;margin:0 10px}
+
+/* header */
+header.site{position:sticky;top:0;z-index:40;background:rgba(251,248,244,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:74px}
+.logo{font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:.18em;text-transform:uppercase;text-align:center;line-height:1}
+.logo small{display:block;font-family:var(--sans);font-size:9.5px;letter-spacing:.42em;font-weight:400;color:var(--muted);margin-top:4px}
+.icons{display:flex;gap:18px;justify-content:flex-end;align-items:center}
+.icons button{background:none;border:0;padding:4px;position:relative}
+.icons svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.4}
+.badge{position:absolute;top:-4px;right:-6px;background:var(--ink);color:#fff;font-size:10px;border-radius:10px;min-width:16px;height:16px;display:grid;place-items:center;padding:0 4px}
+.lang{font-size:12.5px;letter-spacing:.1em;color:var(--muted)}
+.burger{display:none;background:none;border:0;padding:4px}
+nav.main{display:flex;justify-content:center;gap:30px;padding:0 0 14px;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+nav.main > div{position:relative}
+nav.main a.top{padding:6px 0;border-bottom:1px solid transparent}
+nav.main a.top:hover{border-color:var(--ink)}
+nav.main .sale{color:#a23b2a}
+.mega{display:none;position:fixed;left:0;right:0;top:auto;background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:0 18px 30px -20px rgba(0,0,0,.25);text-transform:none;letter-spacing:0;padding:28px 0 32px;margin-top:14px}
+nav.main > div:hover .mega{display:block}
+.mega .wrap{display:grid;grid-template-columns:repeat(4,1fr) 1.3fr;gap:28px}
+.mega h4{font-family:var(--sans);font-weight:500;font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 10px}
+.mega a{display:block;font-size:14px;padding:3px 0;color:var(--muted)}
+.mega a:hover{color:var(--ink)}
+.mega .promo{position:relative;border-radius:2px;overflow:hidden;min-height:180px;background:#ddd center/cover}
+.mega .promo span{position:absolute;left:14px;bottom:12px;color:#fff;font-family:var(--serif);font-size:24px;text-shadow:0 1px 12px rgba(0,0,0,.4)}
+.swatch-dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:8px;vertical-align:-1px;border:1px solid rgba(0,0,0,.12)}
+
+/* mobile menu */
+.drawer-bg{position:fixed;inset:0;background:rgba(20,15,12,.4);z-index:60;opacity:0;pointer-events:none;transition:.25s}
+.drawer-bg.on{opacity:1;pointer-events:auto}
+.mnav{position:fixed;top:0;bottom:0;left:0;width:min(86vw,360px);background:var(--surface);z-index:61;transform:translateX(-102%);transition:.3s;overflow:auto;padding:20px}
+.mnav.on{transform:none}
+.mnav details{border-bottom:1px solid var(--line);padding:12px 0}
+.mnav summary{list-style:none;font-size:14px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between}
+.mnav summary::after{content:"+";color:var(--muted)}
+.mnav details[open] summary::after{content:"–"}
+.mnav details a{display:block;padding:6px 0 6px 6px;color:var(--muted)}
+.mnav .single{display:block;border-bottom:1px solid var(--line);padding:12px 0;font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+.mnav .lang-row{margin-top:20px;font-size:13px;color:var(--muted)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 26px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;border-radius:0}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.light{background:#fff;color:var(--ink);border-color:#fff}
+.btn.full{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* hero */
+.hero{position:relative;min-height:min(78vh,720px);display:grid;grid-template-columns:1fr 1fr;background:#e9e1d8}
+.hero .img{background:center 20%/cover no-repeat}
+.hero .copy{position:absolute;inset:auto 0 0 0;padding:0 max(16px,3vw) 56px;color:#fff;background:linear-gradient(0deg,rgba(20,14,10,.55),rgba(20,14,10,0));padding-top:120px}
+.hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(40px,6vw,76px);line-height:1.02;margin:0 0 14px;max-width:14ch}
+.hero p{max-width:46ch;margin:0 0 24px;font-size:16px;opacity:.95}
+.hero .ctas{display:flex;gap:12px;flex-wrap:wrap}
+
+/* sections */
+section{padding:64px 0}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+h2{font-family:var(--serif);font-weight:500;font-size:clamp(30px,3.4vw,42px);line-height:1.1;margin:0}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+.link{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--ink);padding-bottom:2px}
+
+.usp{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);background:var(--surface)}
+.usp div{padding:18px 16px;text-align:center;font-size:13px;color:var(--muted);border-right:1px solid var(--line)}
+.usp div:last-child{border-right:0}
+.usp b{display:block;color:var(--ink);font-weight:500;font-size:13.5px;letter-spacing:.04em}
+
+.occ{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.occ a{position:relative;aspect-ratio:3/4;background:#ddd center/cover;overflow:hidden}
+.occ a::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.45),transparent 55%)}
+.occ span{position:absolute;left:16px;bottom:14px;z-index:1;color:#fff}
+.occ strong{display:block;font-family:var(--serif);font-weight:500;font-size:28px;line-height:1.1}
+.occ small{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+.occ .season{position:absolute;top:12px;left:12px;z-index:1;background:#fff;color:var(--ink);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px}
+
+/* product grid */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px 16px}
+.card{position:relative}
+.card .ph{display:block;position:relative;aspect-ratio:3/4;background:#ece5dd;overflow:hidden}
+.card .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s}
+.card .ph img.alt{opacity:0}
+.card:hover .ph img.alt{opacity:1}
+.card .tags{position:absolute;top:10px;left:10px;right:50px;display:flex;gap:6px;flex-wrap:wrap;z-index:2}
+.tag{background:#fff;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px}
+.tag.pre{background:var(--accent-soft);color:var(--warn)}
+.tag.new{background:var(--ink);color:#fff}
+.card .wish{position:absolute;top:8px;right:8px;z-index:2;background:rgba(255,255,255,.9);border:0;border-radius:50%;width:34px;height:34px;display:grid;place-items:center}
+.card .wish svg{width:17px;height:17px;stroke:var(--ink);fill:none;stroke-width:1.4}
+.card .wish.on svg{fill:var(--ink)}
+.card .quick{position:absolute;left:10px;right:10px;bottom:10px;z-index:2;opacity:0;transform:translateY(6px);transition:.25s;background:rgba(255,255,255,.95);padding:10px;font-size:12px;text-align:center;letter-spacing:.1em;text-transform:uppercase}
+.card:hover .quick{opacity:1;transform:none}
+.card h3{font-family:var(--sans);font-weight:500;font-size:14px;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 0}
+.card .sub{font-size:13px;color:var(--muted)}
+.card .row{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:14px}
+.dots{display:flex;gap:4px;align-items:center;font-size:11.5px;color:var(--muted)}
+.dots i{width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.15);display:inline-block}
+
+/* showroom */
+.showroom{display:grid;grid-template-columns:1.1fr 1fr;background:var(--surface)}
+.showroom .img{background:center/cover;min-height:440px}
+.showroom .txt{padding:56px max(24px,4vw);display:flex;flex-direction:column;justify-content:center;gap:14px}
+.showroom ul{list-style:none;padding:0;margin:4px 0 8px;display:grid;gap:6px;color:var(--muted);font-size:14px}
+.showroom ul b{color:var(--ink);font-weight:500}
+
+/* reviews */
+.reviews{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.rev{background:var(--surface);padding:22px;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.stars{letter-spacing:3px;color:var(--accent);font-size:13px}
+.rev p{margin:0;font-family:var(--serif);font-size:19px;line-height:1.35}
+.rev small{color:var(--muted);font-size:12.5px;margin-top:auto}
+
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.how div{border-top:1px solid var(--ink);padding-top:14px}
+.how b{font-family:var(--serif);font-size:24px;font-weight:500;display:block;margin-bottom:4px}
+.how p{margin:0;color:var(--muted);font-size:14px}
+
+.news{background:var(--accent-soft);text-align:center;padding:64px 16px}
+.news form{display:flex;max-width:460px;margin:20px auto 8px;border:1px solid var(--ink);background:#fff}
+.news input{flex:1;border:0;padding:14px;font:inherit;background:transparent;min-width:0}
+.news p{color:var(--muted);margin:8px auto 0;max-width:52ch}
+
+footer{background:var(--ink);color:#d9cfc5;padding:56px 0 28px;font-size:14px}
+footer .cols{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:28px}
+footer h5{color:#fff;font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 12px}
+footer a{display:block;padding:3px 0;color:#d9cfc5}
+footer a:hover{color:#fff}
+footer .pay{display:flex;gap:8px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid #3a322d;align-items:center;justify-content:space-between}
+.paybadge{border:1px solid #4b423c;border-radius:3px;padding:3px 9px;font-size:12px;color:#fff}
+
+/* collection */
+.crumbs{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:22px 0 6px}
+.crumbs a:hover{color:var(--ink)}
+.c-head{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:end;padding-bottom:18px}
+.c-head h1{font-family:var(--serif);font-weight:500;font-size:clamp(36px,4.5vw,54px);margin:0;line-height:1}
+.c-head p{margin:0;color:var(--muted);max-width:60ch;justify-self:end}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:0 0 22px;scrollbar-width:none}
+.chips a{white-space:nowrap;border:1px solid var(--line);background:var(--surface);padding:7px 14px;font-size:13px;border-radius:20px}
+.chips a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.toolbar{position:sticky;top:var(--hh,120px);z-index:20;background:var(--bg);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:16px;font-size:13px}
+.toolbar .l{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar select,.fbtn{font:inherit;border:1px solid var(--line);background:var(--surface);padding:7px 12px}
+.fbtn.on{border-color:var(--ink)}
+.count{color:var(--muted)}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:32px}
+.filters{font-size:14px}
+.filters h6{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;margin:0 0 10px;color:var(--ink)}
+.filters .grp{border-bottom:1px solid var(--line);padding:0 0 16px;margin:0 0 16px}
+.filters label{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;color:var(--muted)}
+.filters label:hover{color:var(--ink)}
+.filters input{accent-color:var(--ink)}
+.colorgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 8px}
+.sizes-f{display:flex;flex-wrap:wrap;gap:6px}
+.sizes-f button{border:1px solid var(--line);background:var(--surface);padding:5px 9px;font-size:12.5px;min-width:42px}
+.sizes-f button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.empty{padding:60px 0;text-align:center;color:var(--muted)}
+
+/* product */
+.pdp{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;padding-bottom:40px}
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.gallery img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#ece5dd}
+.info{position:sticky;top:120px;align-self:start;display:flex;flex-direction:column;gap:16px}
+.info h1{font-family:var(--serif);font-weight:500;font-size:44px;line-height:1;margin:0}
+.info .tagline{color:var(--muted);margin:-6px 0 0}
+.price{font-size:18px;letter-spacing:.04em}
+.price small{display:block;font-size:12px;color:var(--muted);letter-spacing:0}
+.opt-label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.opt-label span{color:var(--muted);text-transform:none;letter-spacing:0;font-size:13px}
+.opt-label a{text-transform:none;letter-spacing:0;font-size:13px;border-bottom:1px solid currentColor}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.sw button{width:32px;height:32px;border-radius:50%;border:1px solid rgba(0,0,0,.15);padding:0;outline-offset:3px}
+.sw button.on{outline:1px solid var(--ink)}
+.sizes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.sizes button{border:1px solid var(--line);background:var(--surface);padding:10px 4px;font-size:13px;position:relative}
+.sizes button .st{display:block;font-size:10.5px;letter-spacing:.06em;color:var(--ok);margin-top:1px}
+.sizes button.pre .st{color:var(--warn)}
+.sizes button.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.deliv{border:1px solid var(--line);background:var(--surface);padding:14px 16px;font-size:14px;display:grid;gap:6px}
+.deliv .r{display:flex;gap:10px;align-items:flex-start}
+.deliv .r i{flex:0 0 8px;height:8px;border-radius:50%;margin-top:7px;background:var(--ok)}
+.deliv .r.pre i{background:var(--warn)}
+.deliv small{color:var(--muted)}
+.buy{display:grid;grid-template-columns:1fr 52px;gap:8px}
+.buy .wish{border:1px solid var(--ink);background:none;display:grid;place-items:center}
+.buy .wish svg{width:19px;height:19px;fill:none;stroke:var(--ink);stroke-width:1.4}
+.buy .wish.on svg{fill:var(--ink)}
+.klarna{font-size:13px;color:var(--muted);text-align:center;margin-top:-6px}
+.store-box{display:flex;gap:14px;align-items:center;background:var(--accent-soft);padding:14px 16px;font-size:14px}
+.store-box svg{flex:0 0 22px;width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.4}
+.store-box a{border-bottom:1px solid currentColor;white-space:nowrap}
+.acc details{border-top:1px solid var(--line);padding:14px 0}
+.acc details:last-child{border-bottom:1px solid var(--line)}
+.acc summary{list-style:none;cursor:pointer;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between}
+.acc summary::after{content:"+"}
+.acc details[open] summary::after{content:"–"}
+.acc p,.acc ul{margin:10px 0 0;color:var(--muted);font-size:14px}
+.acc ul{padding-left:18px}
+.register{border:1px dashed var(--accent);padding:14px 16px;font-size:14px}
+.register b{font-weight:500}
+.register a{border-bottom:1px solid currentColor}
+.sticky-atc{display:none}
+
+/* cart drawer */
+.cart{position:fixed;top:0;right:0;bottom:0;width:min(100vw,420px);background:var(--surface);z-index:61;transform:translateX(102%);transition:.3s;display:flex;flex-direction:column}
+.cart.on{transform:none}
+.cart header{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--line)}
+.cart header h3{margin:0;font-family:var(--serif);font-weight:500;font-size:28px}
+.cart .x{background:none;border:0;font-size:26px;line-height:1}
+.cart .items{flex:1;overflow:auto;padding:4px 20px}
+.citem{display:grid;grid-template-columns:84px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--line);font-size:14px}
+.citem img{width:84px;height:112px;object-fit:cover}
+.citem .m{color:var(--muted);font-size:13px}
+.citem .d{font-size:12.5px;margin-top:6px;color:var(--ok)}
+.citem .d.pre{color:var(--warn)}
+.citem .rm{background:none;border:0;padding:0;font-size:12px;text-decoration:underline;color:var(--muted);margin-top:6px}
+.cart .ship{margin:14px 20px 0;padding:10px 12px;background:var(--accent-soft);font-size:13px;text-align:center}
+.cart .upsell{padding:12px 20px;font-size:13px;border-top:1px solid var(--line)}
+.cart .upsell b{font-weight:500;display:block;margin-bottom:8px;letter-spacing:.1em;text-transform:uppercase;font-size:11.5px}
+.ups{display:flex;gap:10px;overflow-x:auto}
+.ups a{flex:0 0 120px;font-size:12px}
+.ups img{width:120px;height:150px;object-fit:cover;margin-bottom:4px}
+.cart footer.cf{padding:18px 20px;border-top:1px solid var(--line);display:grid;gap:10px;background:var(--surface);color:var(--ink)}
+.cart .tot{display:flex;justify-content:space-between;font-size:16px}
+.cart .pays{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.cart .pays span{border:1px solid var(--line);border-radius:3px;padding:2px 8px;font-size:11.5px;color:var(--muted)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:var(--ink);color:#fff;padding:12px 18px;font-size:14px;z-index:80;transition:.3s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ===== fix annotations ===== */
+:where([data-fix]){position:relative}
+body.annot [data-fix]{outline:2px dashed var(--fix);outline-offset:3px}
+.pin{display:none;position:absolute;top:2px;left:2px;z-index:30;width:24px;height:24px;border-radius:50%;background:var(--fix);color:#fff;font-size:12px;font-weight:500;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(107,47,160,.4);cursor:help;font-family:var(--sans);letter-spacing:0;text-transform:none}
+body.annot .pin{display:flex}
+.pin .tip{display:none;position:absolute;top:30px;left:0;width:270px;background:#fff;color:var(--ink);border:1px solid var(--fix);padding:10px 12px;font-size:13px;line-height:1.45;font-weight:400;text-align:left;box-shadow:0 10px 30px -10px rgba(0,0,0,.3)}
+.pin:hover .tip,.pin:focus .tip{display:block}
+.pin .tip b{color:var(--fix);font-weight:500;display:block;margin-bottom:2px}
+.fixbar{position:fixed;right:18px;bottom:18px;z-index:70;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.fixtoggle{background:var(--fix);color:#fff;border:0;border-radius:24px;padding:12px 18px;font-size:13.5px;box-shadow:0 8px 24px -8px rgba(107,47,160,.6);display:flex;align-items:center;gap:8px}
+.fixtoggle i{display:inline-block;width:30px;height:16px;border-radius:9px;background:rgba(255,255,255,.35);position:relative}
+.fixtoggle i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.2s}
+body.annot .fixtoggle i::after{left:16px}
+.fixpanel{display:none;width:min(360px,calc(100vw - 36px));max-height:min(60vh,520px);overflow:auto;background:#fff;border:1px solid var(--fix);box-shadow:0 18px 40px -16px rgba(0,0,0,.35);padding:16px 18px;font-size:13.5px}
+body.annot .fixpanel{display:block}
+.fixpanel h4{margin:0 0 4px;font-size:15px;font-weight:500;color:var(--fix)}
+.fixpanel p.s{margin:0 0 12px;color:var(--muted);font-size:12.5px}
+.fixpanel ol{margin:0;padding-left:0;list-style:none;display:grid;gap:10px}
+.fixpanel li{display:grid;grid-template-columns:24px 1fr;gap:10px}
+.fixpanel li span.n{width:22px;height:22px;border-radius:50%;background:var(--fix-soft);color:var(--fix);display:grid;place-items:center;font-size:11.5px;font-weight:500}
+.fixpanel li b{font-weight:500}
+.fixpanel li small{display:block;color:var(--muted)}
+.fixpanel .was{color:#a23b2a}
+
+/* responsive */
+@media (max-width:1000px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .layout{grid-template-columns:1fr}
+  .filters{display:none}
+  .filters.on{display:block;background:var(--surface);padding:16px;border:1px solid var(--line);margin-bottom:16px}
+  .reviews{grid-template-columns:repeat(2,1fr)}
+  .mega .wrap{grid-template-columns:repeat(3,1fr)}
+  .mega .promo{display:none}
+}
+@media (max-width:760px){
+  body{font-size:14.5px}
+  .hrow{grid-template-columns:auto 1fr auto;height:62px;gap:10px}
+  .burger{display:block}
+  .burger svg{width:24px;height:24px;stroke:currentColor;stroke-width:1.4;fill:none}
+  .logo{font-size:22px}
+  .logo small{font-size:8px}
+  .icons{gap:10px}
+  .icons .hide-m,.lang{display:none}
+  nav.main{display:none}
+  .announce{font-size:11px}
+  .announce .x2{display:none}
+  .hero{grid-template-columns:1fr;min-height:72vh}
+  .hero .img + .img{display:none}
+  .hero .copy{padding-bottom:32px}
+  .usp{grid-template-columns:repeat(2,1fr)}
+  .usp div:nth-child(2){border-right:0}
+  .usp div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  section{padding:44px 0}
+  .occ{grid-template-columns:repeat(2,1fr);gap:8px}
+  .occ strong{font-size:22px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:22px 8px}
+  .card .quick{display:none}
+  .card h3{font-size:12.5px}
+  .showroom{grid-template-columns:1fr}
+  .showroom .img{min-height:260px}
+  .reviews{grid-template-columns:1fr}
+  .how{grid-template-columns:1fr}
+  footer .cols{grid-template-columns:1fr 1fr}
+  .c-head{grid-template-columns:1fr}
+  .c-head p{justify-self:start}
+  .pdp{grid-template-columns:1fr;gap:20px}
+  .gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(-1 * max(16px,3vw))}
+  .gallery img{flex:0 0 86%;scroll-snap-align:center}
+  .info{position:static}
+  .info h1{font-size:36px}
+  .sticky-atc{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px;gap:10px;align-items:center;transform:translateY(110%);transition:.25s}
+  .sticky-atc.on{transform:none}
+  .sticky-atc div{flex:1;font-size:13px;line-height:1.3}
+  .sticky-atc .btn{padding:12px 16px}
+  .fixbar{right:12px;bottom:12px}
+  body.pdp-view .fixbar{bottom:76px}
+  body.cart-open .fixbar{display:none}
+  .fixtoggle{padding:10px 14px;font-size:12.5px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo"><b>Concept by Atensium</b> · a mock-up of ivoryfield.com with the review's fixes applied. Not a live shop. Turn on <b>"Show changes"</b> (bottom right) to see what changed and why.</div>
+
+<div class="announce" data-fix="announce">Snabb leverans <span>·</span> 14 dagars öppet köp <span class="x2">·</span><span class="x2"> Boka provning i vår showroom på Södermalm</span></div>
+
+<header class="site">
+  <div class="wrap">
+    <div class="hrow">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="burger" aria-label="Meny" onclick="toggleMenu(true)"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+        <span class="lang" data-fix="lang">SV · SEK</span>
+      </div>
+      <a href="#/" class="logo" data-fix="logo">Ivory Field<small>Stockholm · sedan 2013</small></a>
+      <div class="icons">
+        <button aria-label="Sök" class="hide-m"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button>
+        <button aria-label="Konto" class="hide-m" data-fix="account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
+        <button aria-label="Önskelista" onclick="toast('Önskelistan sparar dina favoriter mellan besök')"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span class="badge" id="wishCount" style="display:none">0</span></button>
+        <button aria-label="Varukorg" onclick="openCart()"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span class="badge" id="cartCount" style="display:none">0</span></button>
+      </div>
+    </div>
+    <nav class="main" data-fix="nav">
+      <div><a class="top" href="#/c/nyheter">Nyheter</a></div>
+      <div><a class="top" href="#/c/balklanningar">Balklänningar</a>
+        <div class="mega"><div class="wrap">
+          <div><h4>Stil</h4><a href="#/c/balklanningar?stil=A-linje">A-linje</a><a href="#/c/balklanningar?stil=Öppen rygg">Öppen rygg</a><a href="#/c/balklanningar?stil=Slits">Med slits</a><a href="#/c/balklanningar?stil=Multi-way">Multi-way</a><a href="#/c/balklanningar?stil=Korsett">Korsett &amp; glitter</a><a href="#/c/balklanningar">Visa alla</a></div>
+          <div><h4>Färg</h4><div id="megaColors"></div></div>
+          <div><h4>Snabbt</h4><a href="#/c/balklanningar?lager=1">Skickas direkt</a><a href="#/c/balklanningar?showroom=1">Finns att prova i showroom</a><a href="#/c/bastsaljare">Bästsäljare</a><a href="#/c/balklanningar?pris=2600">Under 2 600 kr</a></div>
+          <div><h4>Hjälp</h4><a href="#/info/storlek">Storleksguide</a><a href="#/info/forbestallning">Så funkar förbeställning</a><a href="#/info/skotsel">Skötselråd</a></div>
+          <a class="promo" href="#/c/nyheter" id="megaPromo"><span>Bal 2027 – första nyheterna</span></a>
+        </div></div>
+      </div>
+      <div><a class="top" href="#/c/tillfallen">Shoppa efter tillfälle</a>
+        <div class="mega"><div class="wrap">
+          <div><h4>Tillfälle</h4><a href="#/c/tillfallen?t=bal">Studentbal &amp; bal</a><a href="#/c/tillfallen?t=gala">Gala &amp; Nobel</a><a href="#/c/tillfallen?t=fest">Jul- &amp; nyårsfest</a><a href="#/c/tillfallen?t=brollop">Bröllopsgäst</a><a href="#/c/tillfallen?t=disputation">Disputation &amp; promotion</a></div>
+          <div><h4>Just nu</h4><a href="#/c/tillfallen?t=gala">Galasäsongen</a><a href="#/c/tillfallen?t=fest">Nyårsafton</a></div>
+          <div></div><div></div>
+          <a class="promo" href="#/c/tillfallen?t=gala" id="megaPromo2"><span>Gala &amp; Nobel</span></a>
+        </div></div>
+      </div>
+      <div><a class="top sale" href="#/c/rea">Rea</a></div>
+      <div><a class="top" href="#/showroom" data-fix="shownav">Showroom &amp; provning</a></div>
+      <div><a class="top" href="#/popup">Pop-up</a></div>
+      <div><a class="top" href="#/om-oss">Om oss</a></div>
+    </nav>
+  </div>
+</header>
+
+<div class="drawer-bg" id="bg" onclick="toggleMenu(false);closeCart()"></div>
+<aside class="mnav" id="mnav">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="logo" style="font-size:20px">Ivory Field</span><button onclick="toggleMenu(false)" style="background:none;border:0;font-size:26px">×</button></div>
+  <a class="single" href="#/c/nyheter" onclick="toggleMenu(false)">Nyheter</a>
+  <details open><summary>Balklänningar</summary><a href="#/c/balklanningar" onclick="toggleMenu(false)">Visa alla</a><a href="#/c/balklanningar?stil=A-linje" onclick="toggleMenu(false)">A-linje</a><a href="#/c/balklanningar?stil=Öppen rygg" onclick="toggleMenu(false)">Öppen rygg</a><a href="#/c/balklanningar?stil=Slits" onclick="toggleMenu(false)">Med slits</a><a href="#/c/balklanningar?stil=Multi-way" onclick="toggleMenu(false)">Multi-way</a><a href="#/c/balklanningar?lager=1" onclick="toggleMenu(false)">Skickas direkt</a></details>
+  <details><summary>Shoppa efter tillfälle</summary><a href="#/c/tillfallen?t=bal" onclick="toggleMenu(false)">Studentbal &amp; bal</a><a href="#/c/tillfallen?t=gala" onclick="toggleMenu(false)">Gala &amp; Nobel</a><a href="#/c/tillfallen?t=fest" onclick="toggleMenu(false)">Jul- &amp; nyårsfest</a><a href="#/c/tillfallen?t=brollop" onclick="toggleMenu(false)">Bröllopsgäst</a></details>
+  <a class="single" href="#/c/rea" onclick="toggleMenu(false)" style="color:#a23b2a">Rea</a>
+  <a class="single" href="#/showroom" onclick="toggleMenu(false)">Showroom &amp; provning</a>
+  <a class="single" href="#/popup" onclick="toggleMenu(false)">Pop-up-butiker</a>
+  <a class="single" href="#/om-oss" onclick="toggleMenu(false)">Om oss</a>
+  <a class="single" href="#/" onclick="toggleMenu(false)">Mitt konto</a>
+  <div class="lang-row">Språk och valuta: <b>Svenska · SEK</b> (ändra)</div>
+</aside>
+
+<main id="app"></main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="logo" style="color:#fff;text-align:left;font-size:24px">Ivory Field</div>
+        <p style="max-width:34ch;margin:12px 0">Balklänningar och aftonklänningar sedan 2013. Showroom på Ringvägen 80, Södermalm.</p>
+        <p style="margin:0">Mån–fre 11–17 · Lör 13–17<br>+46 76 213 18 89</p>
+      </div>
+      <div data-fix="footer"><h5>Hjälp</h5><a href="#/info/kontakt">Kontakta oss</a><a href="#/info/leverans">Leverans &amp; returer</a><a href="#/info/forbestallning">Förbeställning</a><a href="#/info/storlek">Storleksguide</a><a href="#/info/skotsel">Skötselråd</a></div>
+      <div><h5>Ivory Field</h5><a href="#/om-oss">Om oss</a><a href="#/showroom">Showroom &amp; provning</a><a href="#/popup">Pop-up-butiker</a><a href="#/info/hallbarhet">Hållbarhet</a><a href="#/info/blogg">Blogg</a></div>
+      <div><h5>Konto</h5><a href="#/">Logga in</a><a href="#/">Skapa konto</a><a href="#/">Presentkort</a><h5 style="margin-top:18px">Följ oss</h5><a href="#/">Instagram</a><a href="#/">TikTok</a></div>
+    </div>
+    <div class="pay"><span>© Ivory Field Stockholm</span><span style="display:flex;gap:6px;flex-wrap:wrap"><span class="paybadge">Klarna</span><span class="paybadge">Swish</span><span class="paybadge">Kort</span><span class="paybadge">PayPal</span><span class="paybadge">Shop Pay</span></span></div>
+  </div>
+</footer>
+
+<aside class="cart" id="cart">
+  <header><h3>Varukorg</h3><button class="x" onclick="closeCart()" aria-label="Stäng">×</button></header>
+  <div class="ship" id="shipMsg" data-fix="cartship"></div>
+  <div class="items" id="cartItems"></div>
+  <div class="upsell" id="upsell" data-fix="upsell"></div>
+  <footer class="cf">
+    <div class="tot"><span>Summa</span><b id="cartTotal">0 kr</b></div>
+    <small style="color:var(--muted);font-size:12.5px">Inkl. moms. Frakt räknas i kassan.</small>
+    <button class="btn full" onclick="toast('Här går kunden vidare till Shopifys kassa – på svenska, med Ivory Fields logga')">Till kassan</button>
+    <div class="pays" data-fix="pays"><span>Klarna</span><span>Swish</span><span>Kort</span><span>PayPal</span><span>Shop Pay</span></div>
+  </footer>
+</aside>
+
+<div class="sticky-atc" id="stickyAtc"></div>
+<div class="toast" id="toast"></div>
+
+<div class="fixbar">
+  <div class="fixpanel" id="fixpanel"></div>
+  <button class="fixtoggle" onclick="toggleAnnot()"><i></i><span>Show changes</span></button>
+</div>
+
+<script>
+const CDN = "https://cdn.shopify.com/s/files/1/0780/4751/0858/files/";
+const img = (f, w=900) => CDN + f + "?width=" + w;
+
+/* Clean colour list: about 50 spellings in the live shop become 14 */
+const COLORS = {
+  "Mörkgrön":"#25483e","Salvia":"#9fae95","Champagne":"#e6d3b3","Vinröd":"#6a1f2b","Puderblå":"#b2c8de",
+  "Himmelsblå":"#86b3dc","Marinblå":"#1f2944","Rosa":"#e9b8c1","Gul":"#f0dc8f","Taupe":"#a8978a",
+  "Lila":"#c9b7dd","Röd":"#a3212a","Kungsblå":"#2d4fa3","Guld & glitter":"#b99b6b"
+};
+
+/* Products: real Ivory Field styles, prices and photos; names, copy and attributes cleaned up */
+const P = [
+ {id:"kylie",name:"Kylie",type:"Multi-way maxiklänning i satin",price:2799,colors:["Mörkgrön","Vinröd","Puderblå","Himmelsblå","Marinblå","Champagne"],
+  imgs:["IvoryField-785.jpg","IvoryField-787.jpg","IvoryField-790.jpg","IvoryField-796.jpg"],stil:["Multi-way"],occ:["bal","gala","brollop"],best:1,showroom:["S","M","L"],
+  sizes:{"XXS":"pre","XS":"pre","S":"in","M":"in","L":"in","XL":"pre","XXL":"pre","2XL":"pre"},
+  desc:"Vår mest mångsidiga klänning. Banden kan knytas på fler än tio sätt – halterneck, korsad rygg, en axel – så att du kan styla den precis som du vill. Den tjocka satinen faller mjukt och ger en lyxig glans på bild.",
+  details:["Lyxig satin med fall","Band som kan knytas på flera sätt","Golvlång, passar till klack","Dold dragkedja bak"]},
+ {id:"moa",name:"Moa",type:"Maxiklänning med djup V och öppen rygg",price:2499,colors:["Mörkgrön","Champagne","Vinröd"],
+  imgs:["016_bc7e724d-44b6-41b9-9cee-90c56f1c74e5.jpg","015_0fee7abc-c79f-40e0-93f2-0c73648296d4.jpg","018_711f48ac-907b-41b3-a559-9c375526a016.jpg","016_84a1ecfe-73f0-4b4d-818b-cffe39ef9cd5.jpg"],stil:["Öppen rygg"],occ:["bal","fest"],best:2,showroom:["S","M"],
+  sizes:{"XXS":"in","XS":"in","S":"in","M":"in","L":"in","XL":"in","XXL":"in","2XL":"pre","3XL":"pre"},
+  desc:"Djup V-ringning fram och öppen rygg bak. Moa är en tidlös favorit som finns i storlek XXS till 3XL.",details:["Satin","Djup V-ringning","Öppen rygg","Golvlång"]},
+ {id:"blake",name:"Blake",type:"Satinklänning med öppen rygg",price:3300,colors:["Mörkgrön","Taupe","Puderblå"],
+  imgs:["IvoryField-2502.jpg","IvoryField-2471.jpg","IvoryField-2461.jpg","IvoryField-2466.jpg"],stil:["Öppen rygg"],occ:["bal","gala"],best:3,showroom:["XS","S","M"],
+  sizes:{"XS":"in","S":"in","M":"in","L":"in","XL":"in","XXL":"pre"},
+  desc:"En ren, skulpterad siluett i tjock satin med en rygg som syns. Blake är gjord för fotografier och långa kvällar.",details:["Tjock satin","Öppen rygg","Golvlång"]},
+ {id:"francis",name:"Francis",type:"Satinklänning med hög slits",price:3300,colors:["Mörkgrön","Champagne","Rosa","Kungsblå","Salvia"],
+  imgs:["IvoryField-1491_0239ee24-508a-435e-82a2-bda9b85c70da.jpg","IvoryField-1531_89dde07a-21f8-423b-87dc-39ca435a1119.jpg","IvoryField-98_1749f58f-8117-4147-be7e-eaf58e934129.jpg","IvoryField-102_4a65e01e-d24e-4959-868a-6faf269c3c3d.jpg"],stil:["Slits"],occ:["bal","gala","fest"],best:4,showroom:["S","M","L"],
+  sizes:{"XXS":"pre","XS":"pre","S":"in","M":"in","L":"in","XL":"in","XXL":"pre"},
+  desc:"Två smala axelband, hög slits och fem färger. Francis rör sig vackert och känns lika bra på dansgolvet som på middagen.",details:["Satin","Hög slits","Smala axelband"]},
+ {id:"antonia",name:"Antonia",type:"Satinklänning",price:3300,colors:["Lila","Himmelsblå"],
+  imgs:["IvoryField-1296.jpg","IvoryField-1306.jpg","IvoryField-1307.jpg","IvoryField-1312.jpg"],stil:["Slits"],occ:["bal","brollop"],best:7,showroom:["S"],
+  sizes:{"XXS":"pre","XS":"pre","S":"in","M":"in","L":"pre","XL":"pre","2XL":"pre"},
+  desc:"Mjuk satin i drömska pasteller. En självklar klänning för bal och bröllop.",details:["Satin","Golvlång"]},
+ {id:"stella",name:"Stella",type:"A-linjeklänning i satin",price:3300,colors:["Champagne","Röd","Himmelsblå","Marinblå"],
+  imgs:["IvoryField-1366.jpg","IvoryField-1361.jpg","IvoryField-1365.jpg","IvoryField-1378.jpg"],stil:["A-linje","Öppen rygg"],occ:["bal","gala"],best:5,showroom:["XS","S"],
+  sizes:{"XXS":"in","XS":"in","S":"in","M":"in"},
+  desc:"Klassisk A-linje som smalnar av i midjan och vidgar sig mot golvet. Öppen rygg ger en modern känsla.",details:["Satin","A-linje","Öppen rygg"]},
+ {id:"alice",name:"Alice",type:"Maxiklänning med öppen rygg",price:2600,colors:["Gul"],isNew:1,
+  imgs:["IMG-1732.png","IMG-1797.png","IMG-1737.png","IMG-1735.png"],stil:["Öppen rygg"],occ:["bal","brollop"],best:8,showroom:[],
+  sizes:{"XXS":"in","XS":"in","S":"in","M":"in"},
+  desc:"Minimalistisk framifrån, oförglömlig bakifrån. Hög halsringning fram och en djupt öppen rygg i tjock satin.",details:["Tjock satin","Hög halsringning","Öppen rygg","Extra lång"]},
+ {id:"olivia",name:"Olivia",type:"Volangklänning med axelbandslös topp",price:2600,colors:["Rosa","Gul","Puderblå"],isNew:1,
+  imgs:["E815E177-936C-4408-B0FF-F95757B4AB7E.png","3D4C2064-A48D-41DA-95F5-91304035A5C8.png","2CF348E3-EDDC-410B-B03E-A5DDBDF988A2.jpg","8C113B3D-9983-4F70-9EBC-3D110F43B934.jpg"],stil:["A-linje"],occ:["bal","brollop"],best:6,showroom:["S","M"],
+  sizes:{"XXS":"in","XS":"in","S":"in","M":"in","L":"pre"},
+  desc:"Mjuk, feminin och gjord för att röra sig. Strukturerad axelbandslös topp och en kjol i flera lager.",details:["Axelbandslös topp","Kjol i flera lager"]},
+ {id:"daphne",name:"Daphne",type:"Satinklänning",price:3000,colors:["Salvia","Rosa"],isNew:1,
+  imgs:["E04BA07A-9A2B-44A8-A3AC-7E4C7F95A5CB.jpg","3328E1A1-B5C7-4000-BE6B-12C3593764C0.png","5D64D7CD-15C1-4821-9CD9-AD47AEFE741D.png","ECE02D6E-9A5B-40D4-9FBD-9B54135D8609.png"],stil:["Öppen rygg"],occ:["bal","brollop","gala"],best:9,showroom:["XS","S"],
+  sizes:{"XXS":"in","XS":"in","S":"in","M":"in"},
+  desc:"Ny för säsongen. Satin i isgrönt och mjukrosa.",details:["Satin"]},
+ {id:"madison",name:"Madison",type:"Glittrig klänning med korsettopp",price:3600,colors:["Marinblå","Guld & glitter","Mörkgrön"],
+  imgs:["E52ECC1B-F147-4679-8E6C-E1923DBDE1E1.jpg","6CEDB103-21E8-439A-9497-D18589384E5D.jpg","C2359EDF-3C7E-4277-8153-26F792BEBC98.jpg","C82828C2-C4BF-4ABC-A3BD-9C83898F0C11.jpg"],stil:["Korsett","Slits"],occ:["gala","fest"],best:10,showroom:["S","M"],
+  sizes:{"S":"in","M":"in","L":"in"},
+  desc:"Korsettopp och glittrande tyg för kvällar som kräver lite extra. Perfekt till nyår och gala.",details:["Glittrande tyg","Korsettopp","Slits"]},
+ {id:"kiev",name:"Kiev",type:"Klänning med öppen rygg",price:3300,colors:["Röd"],
+  imgs:["023.jpg","020.jpg","021.jpg","024.jpg"],stil:["Öppen rygg"],occ:["gala","fest"],best:11,showroom:["M"],
+  sizes:{"XXS":"pre","XS":"in","S":"in","M":"in","L":"in","XL":"pre","2XL":"pre","3XL":"pre"},
+  desc:"Klarröd, öppen rygg och en siluett som märks.",details:["Öppen rygg","Golvlång"]},
+ {id:"faith",name:"Faith Luxe",type:"Satinklänning med slits",price:3300,colors:["Rosa"],isNew:1,
+  imgs:["C2B646AE-9305-43A3-BFA7-D7B962AA3800.png","AF2CBEE8-F3DC-460A-8F5C-29DB4ADD6F1F.png","FFCF1710-43CA-49F5-9D90-623959ACAD80.png"],stil:["Slits"],occ:["bal","gala"],best:12,showroom:[],
+  sizes:{"XXS":"in","XS":"in","S":"in","M":"in"},
+  desc:"Vår lyxigaste satin i rosa, med slits.",details:["Lyxig satin","Slits"]}
+];
+const byId = id => P.find(p => p.id === id);
+const kr = n => n.toLocaleString("sv-SE") + " kr";
+const SIZE_ORDER = ["XXS","XS","S","M","L","XL","XXL","2XL","3XL"];
+
+/* Delivery dates, computed from today */
+function addBizDays(d, n){ d = new Date(d); while(n>0){ d.setDate(d.getDate()+1); if(d.getDay()%6) n--; } return d; }
+const fmt = d => d.toLocaleDateString("sv-SE",{day:"numeric",month:"short"});
+function deliveryText(status){
+  const t = new Date();
+  if(status==="in") return `Levereras ${fmt(addBizDays(t,3))}–${fmt(addBizDays(t,5))}`;
+  const a = new Date(t); a.setDate(a.getDate()+21); const b = new Date(t); b.setDate(b.getDate()+49);
+  return `Förbeställning · levereras ${fmt(a)}–${fmt(b)}`;
+}
+
+/* ===== fix notes per page ===== */
+const FIX = {
+  announce:[1,"Announcement bar sells something","Was \"Welcome to our store\". Now: fast delivery, 14-day returns and the showroom. (Review rec. 4)"],
+  lang:[2,"Swedish by default","The live shop opens in English for Swedish visitors. (Rec. 2)"],
+  logo:[3,"Stronger wordmark","A clear brand name with Stockholm and 2013 instead of small text."],
+  nav:[4,"Menu by occasion, style and colour","Every link goes where it says. \"New Arrivals\" no longer opens the swimwear collection, and \"About us\" no longer opens a blog post. (Rec. 1, 7)"],
+  shownav:[5,"Showroom in the main menu","Customers praise the in-store service, so the showroom becomes a reason to buy. (Rec. 12)"],
+  account:[6,"Account and wishlist work","Log in, Sign up and Gift card were dead links in the footer. (Rec. 1, 15)"],
+  footer:[7,"All footer links work","The pre-order policy page returned a 404. (Rec. 1)"],
+  hero:[8,"Hero looks ahead to prom 2027","With a second button for try-ons. Today the site still shows Prom 2026."],
+  occasions:[9,"Shop by occasion, all year","Gala, Nobel and New Year give people a reason to visit outside prom season. (Rec. 7)"],
+  best:[10,"Real best sellers","On the live shop, \"Best sellers\" holds all 65 products. (Rec. 3)"],
+  card:[11,"Clean product cards","A short name and type, colour dots and pre-order or showroom badges. No more \"Satin Moa-Deep v Neckline Maxi Dress prom dress royal blue\". (Rec. 10)"],
+  reviews:[12,"Reviews up front","Real customer quotes, with room for star reviews collected after each event. (Rec. 11)"],
+  how:[13,"Pre-order explained","Lead time and returns are explained before the customer picks a size. (Rec. 9)"],
+  newsletter:[14,"Signup with a reason","Early access to prom 2027 plus 10%. Shown in the page, not as a popup on arrival. (Rec. 5)"],
+  showroom:[15,"Book a try-on","The showroom, with opening hours and a booking button. (Rec. 12)"],
+  crumbs:[16,"Breadcrumbs and intro text","Helps customers and Google know where they are."],
+  chips:[17,"Quick filters by occasion","One tap to the dresses that fit the event."],
+  toolbar:[18,"Products first, then filters","On mobile today, the banner fills the whole first screen. Here the dresses show at once. (Rec. 13)"],
+  colorfilter:[19,"14 colours instead of ~50","\"Sky blue\", \"Sky Blue\", \"Skyblue\" and \"Champage\" become one clean list. The product agent does this automatically. (Pilot win 1)"],
+  instock:[20,"\"Ships now\" and \"Try in showroom\" filters","These only work once Zettle and Shopify stock are synced. (Pilot win 2)"],
+  pdptitle:[21,"Right name, short tagline","The live Kylie page shows \"Satin Moa dress\" as its title and breadcrumb."],
+  sizes:[22,"Pre-order shown per size","Was hidden in size names like \"PRE-ORDER 0/XXS\". Each size now says if it's in stock or on pre-order. (Rec. 9)"],
+  deliv:[23,"Delivery date and return terms for the size you picked","Pre-order: 3–7 weeks and 7-day returns, shown before buying. The 15 March cut-off is an example to agree with Yolinne."],
+  storebox:[24,"Try in the showroom","Showroom stock comes from Zettle once stock is synced. (Pilot win 2)"],
+  acc:[25,"Same details on every dress","Description, material, fit and care, written by the product agent from the supplier sheet and approved by Yolinne. Today 33 of 65 products have no description. Model height and care text here are examples. (Pilot win 1)"],
+  register:[26,"Prom register","Classmates can check that nobody else picked the same dress. Brings friends to the site. (Rec. 16)"],
+  sticky:[27,"Sticky buy button on mobile",""],
+  cartship:[28,"Delivery per item in the cart","In-stock and pre-order dresses each show their own date."],
+  upsell:[29,"Add-ons in the cart","Room for accessories or a second colour. (Rec. 5)"],
+  pays:[30,"Swedish payment methods","Klarna and Swish first for Swedish buyers. Check with the payment provider that Swish can be added."]
+};
+
+/* ===== rendering ===== */
+const app = document.getElementById("app");
+function pin(key){ const f = FIX[key]; if(!f) return ""; return `<span class="pin" tabindex="0">${f[0]}<span class="tip"><b>${f[1]}</b>${f[2]}</span></span>`; }
+function decoratePins(){
+  document.querySelectorAll("[data-fix]").forEach(el=>{
+    if(el.querySelector(":scope > .pin")) return;
+    el.insertAdjacentHTML("afterbegin", pin(el.dataset.fix));
+  });
+  const keys = [...new Set([...document.querySelectorAll("[data-fix]")].filter(el=>el.offsetParent!==null||el.closest('.cart')).map(el=>el.dataset.fix))];
+  const items = keys.map(k=>FIX[k]).filter(Boolean).sort((a,b)=>a[0]-b[0]);
+  document.getElementById("fixpanel").innerHTML = `<h4>What changed on this page</h4><p class="s">Hover a purple number on the page for details. "Rec." refers to the web shop review.</p><ol>${items.map(f=>`<li><span class="n">${f[0]}</span><div><b>${f[1]}</b><small>${f[2]}</small></div></li>`).join("")}</ol>`;
+}
+
+function card(p){
+  const pre = Object.values(p.sizes).every(s=>s==="pre");
+  const somePre = Object.values(p.sizes).some(s=>s==="pre");
+  const tags = [p.isNew?'<span class="tag new">Nyhet</span>':'', p.showroom.length?'<span class="tag">I showroom</span>':'', pre?'<span class="tag pre">Förbeställning</span>':''].join("");
+  return `<article class="card">
+    <a href="#/p/${p.id}" class="ph">
+      <div class="tags">${tags}</div>
+      <img src="${img(p.imgs[0],700)}" alt="${p.name} ${p.type.toLowerCase()} i ${p.colors[0].toLowerCase()}" loading="lazy">
+      <img class="alt" src="${img(p.imgs[1]||p.imgs[0],700)}" alt="" loading="lazy">
+      <span class="quick">Snabbköp</span>
+    </a>
+    <button class="wish ${wish.has(p.id)?'on':''}" aria-label="Spara ${p.name}" onclick="toggleWish('${p.id}',this)"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+    <a href="#/p/${p.id}"><h3>${p.name}</h3><div class="sub">${p.type}</div></a>
+    <div class="row"><span>${kr(p.price)}</span><span class="dots">${p.colors.slice(0,4).map(c=>`<i style="background:${COLORS[c]}" title="${c}"></i>`).join("")}${p.colors.length>4?`+${p.colors.length-4}`:""}</span></div>
+  </article>`;
+}
+
+function home(){
+  const best = [...P].sort((a,b)=>a.best-b.best).slice(0,8);
+  app.innerHTML = `
+  <div class="hero" data-fix="hero">
+    <div class="img" style="background-image:url('${img("IvoryField-785.jpg",1400)}')"></div>
+    <div class="img" style="background-image:url('${img("IvoryField-2502.jpg",1400)}')"></div>
+    <div class="copy">
+      <p class="eyebrow" style="color:#f3e6d6">Bal 2027 · nya klänningar varje vecka</p>
+      <h1>Klänningen du minns hela livet</h1>
+      <p>Balklänningar och aftonklänningar från XXS till 3XL. Handla online eller prova i vår showroom på Södermalm.</p>
+      <div class="ctas"><a class="btn light" href="#/c/balklanningar">Handla balklänningar</a><a class="btn ghost" style="color:#fff;border-color:#fff" href="#/showroom">Boka provning</a></div>
+    </div>
+  </div>
+  <div class="usp">
+    <div><b>Snabb leverans</b>Lagervaror skickas inom 2–3 arbetsdagar</div>
+    <div><b>14 dagars öppet köp</b>På klänningar i lager</div>
+    <div><b>XXS–3XL</b>Storleksguide på varje klänning</div>
+    <div><b>Showroom på Södermalm</b>Prova innan du bestämmer dig</div>
+  </div>
+
+  <section><div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Handla efter tillfälle</p><h2>Vad ska du fira?</h2></div></div>
+    <div class="occ" data-fix="occasions">
+      <a href="#/c/tillfallen?t=bal" style="background-image:url('${img("IvoryField-1366.jpg",800)}')"><span><small>Vår 2027</small><strong>Studentbal &amp; bal</strong></span></a>
+      <a href="#/c/tillfallen?t=gala" style="background-image:url('${img("E52ECC1B-F147-4679-8E6C-E1923DBDE1E1.jpg",800)}')"><b class="season">Just nu</b><span><small>December</small><strong>Gala &amp; Nobel</strong></span></a>
+      <a href="#/c/tillfallen?t=fest" style="background-image:url('${img("023.jpg",800)}')"><b class="season">Just nu</b><span><small>Jul &amp; nyår</small><strong>Fest</strong></span></a>
+      <a href="#/c/tillfallen?t=brollop" style="background-image:url('${img("IvoryField-1296.jpg",800)}')"><span><small>Hela året</small><strong>Bröllopsgäst</strong></span></a>
+    </div>
+  </div></section>
+
+  <section style="padding-top:0"><div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Mest köpta</p><h2>Bästsäljare</h2></div><a class="link" href="#/c/bastsaljare">Visa alla</a></div>
+    <div class="grid" data-fix="best">${best.map((p,i)=> i===0 ? card(p).replace('<article class="card">','<article class="card" data-fix="card">') : card(p)).join("")}</div>
+  </div></section>
+
+  <div class="showroom" data-fix="showroom">
+    <div class="img" style="background-image:url('${img("IvoryField-1491_0239ee24-508a-435e-82a2-bda9b85c70da.jpg",1200)}')"></div>
+    <div class="txt">
+      <p class="eyebrow">Showroom · Ringvägen 80, Södermalm</p>
+      <h2>Prova i lugn och ro</h2>
+      <p style="color:var(--muted);margin:0;max-width:46ch">Boka en provning så tar vi fram dina favoriter i rätt storlekar innan du kommer. Vi hjälper dig med passform, färg och skötsel.</p>
+      <ul><li><b>Mån–fre</b> 11–17</li><li><b>Lördag</b> 13–17</li><li><b>Pop-up 2026</b> Jönköping och Örebro</li></ul>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="#/showroom">Boka provning</a><a class="btn ghost" href="#/popup">Pop-up-datum</a></div>
+    </div>
+  </div>
+
+  <section><div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Från våra kunder</p><h2>Vad de säger</h2></div></div>
+    <div class="reviews" data-fix="reviews">
+      <div class="rev"><span class="stars">★★★★★</span><p>“Excellent service and support from the staff. Would highly recommend.”</p><small>Amy R. · Showroom</small></div>
+      <div class="rev"><span class="stars">★★★★★</span><p>“Sat perfect and very good quality. Fast delivery.”</p><small>Jane S. · Online</small></div>
+      <div class="rev"><span class="stars">★★★★★</span><p>“Fits like a tailor. The back is laced, so the size can be adjusted.”</p><small>Julie S. · Showroom</small></div>
+      <div class="rev"><span class="stars">★★★★★</span><p>“I found the dress for my PhD promotion, and I love it.”</p><small>Valentina C. · Showroom</small></div>
+    </div>
+  </div></section>
+
+  <section style="padding-top:0"><div class="wrap">
+    <div class="sec-head"><div><p class="eyebrow">Inga överraskningar</p><h2>Så funkar leverans och förbeställning</h2></div><a class="link" href="#/info/forbestallning">Läs mer</a></div>
+    <div class="how" data-fix="how">
+      <div><b>I lager</b><p>Skickas inom 2–3 arbetsdagar. 14 dagars öppet köp.</p></div>
+      <div><b>Förbeställning</b><p>Sys upp för dig och levereras inom 3–7 veckor. 7 dagars returrätt. Du ser datumet innan du köper.</p></div>
+      <div><b>Bal i maj?</b><p>Beställ förbeställda klänningar senast 15 mars så hinner de fram med marginal.</p></div>
+    </div>
+  </div></section>
+
+  <div class="news" data-fix="newsletter">
+    <p class="eyebrow">Bal 2027</p><h2>Först till nya klänningar</h2>
+    <form onsubmit="event.preventDefault();toast('Tack! Du får tidig tillgång och 10 % rabatt.')"><input type="email" placeholder="Din e-post" aria-label="E-post"><button class="btn" type="submit">Anmäl</button></form>
+    <p>Få nya kollektioner före alla andra och 10 % på första köpet.</p>
+  </div>`;
+}
+
+let filt = {color:new Set(), stil:new Set(), size:null, lager:false, showroom:false, sort:"pop"};
+function collection(handle, params){
+  const titles = {balklanningar:["Balklänningar","Balklänningar för studentbal, gala och fest. Satin, slits, öppen rygg och A-linje i storlek XXS–3XL. Prova i vår showroom på Södermalm eller beställ online."],
+    nyheter:["Nyheter","De senaste klänningarna inför bal 2027."], bastsaljare:["Bästsäljare","De klänningar våra kunder väljer oftast."],
+    tillfallen:["Shoppa efter tillfälle","Hitta klänningen efter vad du ska fira."], rea:["Rea","Utvalda klänningar till nedsatt pris."]};
+  const t = params.get("t");
+  const occName = {bal:"Studentbal & bal",gala:"Gala & Nobel",fest:"Jul- & nyårsfest",brollop:"Bröllopsgäst",disputation:"Disputation & promotion"};
+  let [title, intro] = titles[handle] || titles.balklanningar;
+  if(handle==="tillfallen" && t){ title = occName[t]; intro = t==="gala" ? "Galasäsongen är här. Glitter, satin och klänningar som gör entré – för Nobel, julbord och galamiddagar." : intro; }
+  filt = {color:new Set(), stil:new Set(params.get("stil")?[params.get("stil")]:[]), size:null, lager:params.get("lager")==="1", showroom:params.get("showroom")==="1", sort:"pop", pris:params.get("pris")?+params.get("pris"):null};
+  let base = P;
+  if(handle==="nyheter") base = P.filter(p=>p.isNew);
+  if(handle==="bastsaljare") base = [...P].sort((a,b)=>a.best-b.best).slice(0,8);
+  if(handle==="rea") base = [];
+  if(handle==="tillfallen" && t) base = P.filter(p=>p.occ.includes(t)||(t==="disputation"&&p.occ.includes("gala")));
+  const usedColors = Object.keys(COLORS).filter(c=>P.some(p=>p.colors.includes(c)));
+  app.innerHTML = `<div class="wrap">
+    <div class="crumbs" data-fix="crumbs"><a href="#/">Hem</a> / <a href="#/c/${handle}">${(titles[handle]||titles.balklanningar)[0]}</a>${t?` / ${title}`:""}</div>
+    <div class="c-head"><h1>${title}</h1><p>${intro}</p></div>
+    <div class="toolbar" data-fix="toolbar">
+      <div class="l"><button class="fbtn" onclick="document.querySelector('.filters').classList.toggle('on')">Filter</button><span class="count" id="count"></span></div>
+      <select onchange="filt.sort=this.value;renderGrid()" aria-label="Sortera"><option value="pop">Populärast</option><option value="new">Nyast</option><option value="low">Pris: lågt till högt</option><option value="high">Pris: högt till lågt</option></select>
+    </div>
+    <div class="chips" data-fix="chips">
+      ${[["bal","Studentbal"],["gala","Gala & Nobel"],["fest","Jul & nyår"],["brollop","Bröllopsgäst"]].map(([k,v])=>`<a href="#/c/tillfallen?t=${k}" class="${t===k?'on':''}">${v}</a>`).join("")}
+      <a href="#/c/balklanningar?stil=Öppen rygg">Öppen rygg</a><a href="#/c/balklanningar?stil=Slits">Slits</a><a href="#/c/balklanningar?stil=A-linje">A-linje</a>
+    </div>
+    <div class="layout">
+      <aside class="filters">
+        <div class="grp" data-fix="instock"><h6>Tillgänglighet</h6>
+          <label><input type="checkbox" ${filt.lager?'checked':''} onchange="filt.lager=this.checked;renderGrid()"> Skickas direkt</label>
+          <label><input type="checkbox" ${filt.showroom?'checked':''} onchange="filt.showroom=this.checked;renderGrid()"> Finns att prova i showroom</label></div>
+        <div class="grp"><h6>Storlek</h6><div class="sizes-f">${SIZE_ORDER.map(s=>`<button onclick="filt.size=filt.size==='${s}'?null:'${s}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.textContent===filt.size));renderGrid()">${s}</button>`).join("")}</div></div>
+        <div class="grp" data-fix="colorfilter"><h6>Färg</h6><div class="colorgrid">${usedColors.map(c=>`<label><input type="checkbox" onchange="this.checked?filt.color.add('${c}'):filt.color.delete('${c}');renderGrid()"><span class="swatch-dot" style="background:${COLORS[c]}"></span>${c}</label>`).join("")}</div></div>
+        <div class="grp"><h6>Stil</h6>${["A-linje","Öppen rygg","Slits","Multi-way","Korsett"].map(s=>`<label><input type="checkbox" ${filt.stil.has(s)?'checked':''} onchange="this.checked?filt.stil.add('${s}'):filt.stil.delete('${s}');renderGrid()"> ${s}</label>`).join("")}</div>
+        <div class="grp" style="border:0"><h6>Pris</h6><label><input type="checkbox" ${filt.pris?'checked':''} onchange="filt.pris=this.checked?2600:null;renderGrid()"> Under 2 600 kr</label></div>
+      </aside>
+      <div><div class="grid" id="grid" style="grid-template-columns:repeat(auto-fill,minmax(min(200px,42vw),1fr))"></div></div>
+    </div>
+  </div><div style="height:60px"></div>`;
+  window._base = base;
+  renderGrid();
+}
+function renderGrid(){
+  let list = window._base.filter(p=>
+    (!filt.color.size || p.colors.some(c=>filt.color.has(c))) &&
+    (!filt.stil.size || p.stil.some(s=>filt.stil.has(s))) &&
+    (!filt.size || p.sizes[filt.size]) &&
+    (!filt.lager || Object.values(p.sizes).includes("in") && (!filt.size || p.sizes[filt.size]==="in")) &&
+    (!filt.showroom || p.showroom.length) &&
+    (!filt.pris || p.price < filt.pris));
+  if(filt.sort==="low") list.sort((a,b)=>a.price-b.price);
+  if(filt.sort==="high") list.sort((a,b)=>b.price-a.price);
+  if(filt.sort==="new") list.sort((a,b)=>(b.isNew||0)-(a.isNew||0));
+  if(filt.sort==="pop") list.sort((a,b)=>a.best-b.best);
+  document.getElementById("count").textContent = list.length + (list.length===1?" klänning":" klänningar");
+  document.getElementById("grid").innerHTML = list.length ? list.map(card).join("") : `<div class="empty">${window._base.length? "Inga klänningar matchar filtret.":"Rean startar snart – anmäl dig till nyhetsbrevet så får du veta först."}</div>`;
+  decoratePins();
+}
+
+let sel = {};
+function product(id){
+  const p = byId(id) || P[0];
+  sel = {color:p.colors[0], size:null};
+  const sizes = SIZE_ORDER.filter(s=>p.sizes[s]);
+  const recs = P.filter(x=>x.id!==p.id && x.occ.some(o=>p.occ.includes(o))).slice(0,4);
+  document.body.classList.add("pdp-view");
+  app.innerHTML = `<div class="wrap">
+    <div class="crumbs"><a href="#/">Hem</a> / <a href="#/c/balklanningar">Balklänningar</a> / ${p.name}</div>
+    <div class="pdp">
+      <div class="gallery">${p.imgs.map((f,i)=>`<img src="${img(f,1100)}" alt="${p.name}, ${p.type.toLowerCase()}, bild ${i+1}" ${i>1?'loading="lazy"':''}>`).join("")}</div>
+      <div class="info">
+        <div data-fix="pdptitle"><h1>${p.name}</h1><p class="tagline">${p.type}</p></div>
+        <div class="price">${kr(p.price)}<small>Inkl. moms</small></div>
+        <div><div class="opt-label">Färg <span id="colorName">${sel.color}</span></div>
+          <div class="sw">${p.colors.map((c,i)=>`<button class="${i?'':'on'}" style="background:${COLORS[c]}" aria-label="${c}" onclick="sel.color='${c}';document.getElementById('colorName').textContent='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));this.classList.add('on')"></button>`).join("")}</div></div>
+        <div data-fix="sizes"><div class="opt-label">Storlek <a href="#/info/storlek" onclick="event.preventDefault();toast('Storleksguiden öppnas här – med mått i cm och modellens längd och storlek')">Hitta din storlek</a></div>
+          <div class="sizes">${sizes.map(s=>`<button class="${p.sizes[s]==='pre'?'pre':''}" onclick="pickSize('${p.id}','${s}',this)">${s}<span class="st">${p.sizes[s]==='in'?'I lager':'Förbeställ'}</span></button>`).join("")}</div></div>
+        <div class="deliv" id="deliv" data-fix="deliv"><div class="r"><i></i><div>Välj storlek för att se leveransdatum<br><small>I lager: 2–3 arbetsdagar · Förbeställning: 3–7 veckor</small></div></div></div>
+        <div class="buy"><button class="btn" id="atc" onclick="addToCart('${p.id}')">Välj storlek</button><button class="wish ${wish.has(p.id)?'on':''}" aria-label="Spara" onclick="toggleWish('${p.id}',this)"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button></div>
+        <div class="klarna">Betala med Klarna, Swish eller kort</div>
+        ${p.showroom.length?`<div class="store-box" data-fix="storebox"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><div>Finns att prova i showroomen i <b>${p.showroom.join(", ")}</b>.<br><small style="color:var(--muted)">Ringvägen 80 · idag 11–17</small></div><a href="#/showroom">Boka</a></div>`:""}
+        <div class="acc" data-fix="acc">
+          <details open><summary>Beskrivning</summary><p>${p.desc}</p></details>
+          <details><summary>Detaljer &amp; material</summary><ul>${p.details.map(d=>`<li>${d}</li>`).join("")}</ul></details>
+          <details><summary>Passform</summary><p>Normal i storlek. Är du mellan två storlekar rekommenderar vi den större. Modellen är 170 cm och bär storlek S.</p></details>
+          <details><summary>Skötsel</summary><p>Ångas på låg värme eller kemtvättas. Se vår skötselguide för hur du får klänningen som ny igen efter balen.</p></details>
+          <details><summary>Leverans &amp; returer</summary><p>Lagervaror skickas inom 2–3 arbetsdagar med 14 dagars öppet köp. Förbeställda klänningar levereras inom 3–7 veckor med 7 dagars returrätt.</p></details>
+        </div>
+        <div class="register" data-fix="register"><b>Ska du på studentbal?</b> Kolla i Bal-registret att ingen i din klass redan valt ${p.name} i ${sel.color.toLowerCase()}. <a href="#/" onclick="event.preventDefault();toast('Kunden anger skola och bal – och ser vilka klänningar som redan är tagna')">Kolla din skola</a></div>
+      </div>
+    </div>
+    <section style="padding-top:20px"><div class="sec-head"><h2>Passar ihop med</h2></div><div class="grid">${recs.map(card).join("")}</div></section>
+  </div>`;
+  const st = document.getElementById("stickyAtc");
+  st.innerHTML = `<div><b>${p.name}</b><br>${kr(p.price)}</div><button class="btn" onclick="window.scrollTo({top:document.querySelector('.sizes').getBoundingClientRect().top+scrollY-120,behavior:'smooth'})">Välj storlek</button>`;
+  st.setAttribute("data-fix","sticky");
+}
+function pickSize(id,s,btn){
+  const p = byId(id); sel.size = s;
+  btn.parentNode.querySelectorAll("button").forEach(b=>b.classList.remove("on")); btn.classList.add("on");
+  const pre = p.sizes[s]==="pre";
+  document.getElementById("deliv").innerHTML = pin("deliv") + `<div class="r ${pre?'pre':''}"><i></i><div><b>${deliveryText(p.sizes[s])}</b><br><small>${pre?'Sys upp för dig. 7 dagars returrätt. Beställ senast 15 mars för bal i maj.':'I lager. Beställ idag så skickas den inom 2–3 arbetsdagar. 14 dagars öppet köp.'}</small></div></div>`;
+  const atc = document.getElementById("atc"); atc.textContent = pre ? "Förbeställ · "+kr(p.price) : "Lägg i varukorgen · "+kr(p.price);
+  document.querySelector("#stickyAtc .btn").textContent = pre ? "Förbeställ" : "Lägg i varukorgen";
+  document.querySelector("#stickyAtc .btn").onclick = ()=>addToCart(id);
+}
+
+function page(kind){
+  const pages = {
+    showroom:["Showroom & provning","Boka en provning på Ringvägen 80, Södermalm. Välj dag och tid så tar vi fram dina favoriter i rätt storlekar innan du kommer. Öppet mån–fre 11–17 och lör 13–17. (Here the booking calendar would sit, for example a Shopify booking app.)"],
+    popup:["Pop-up-butiker","Pop-up-butiker i Jönköping och Örebro 2026. Datum, adress och vilka klänningar som finns på plats."],
+    "om-oss":["Om oss","Yolinne grundade Ivory Field 2013 med en vision om vackra klänningar för livets stora stunder. Vi är ett företag drivet av kvinnor, för kvinnor, med showroom på Södermalm."],
+    info:["Hjälp","Leverans, returer, förbeställning, storleksguide och skötselråd – samlade på en plats, på svenska."]
+  };
+  const [t, txt] = pages[kind] || pages.info;
+  app.innerHTML = `<div class="wrap" style="padding:60px 0 90px;max-width:760px"><p class="eyebrow">Ivory Field</p><h2 style="font-size:48px">${t}</h2><p style="color:var(--muted);font-size:16px">${txt}</p><a class="btn" href="#/c/balklanningar" style="margin-top:20px">Handla klänningar</a></div>`;
+}
+
+/* ===== cart & wishlist ===== */
+let cart = [];
+let wish = new Set();
+function addToCart(id){
+  const p = byId(id);
+  if(!sel.size){ toast("Välj en storlek först"); return; }
+  cart.push({id, color:sel.color, size:sel.size, status:p.sizes[sel.size]});
+  renderCart(); openCart();
+}
+function renderCart(){
+  const n = cart.length;
+  const b = document.getElementById("cartCount"); b.textContent = n; b.style.display = n?"grid":"none";
+  document.getElementById("cartItems").innerHTML = n ? cart.map((c,i)=>{const p=byId(c.id);return `<div class="citem"><img src="${img(p.imgs[0],300)}" alt=""><div><b>${p.name}</b><div class="m">${c.color} · ${c.size}</div><div>${kr(p.price)}</div><div class="d ${c.status==='pre'?'pre':''}">${deliveryText(c.status)}</div><button class="rm" onclick="cart.splice(${i},1);renderCart()">Ta bort</button></div></div>`}).join("") : `<p style="color:var(--muted);padding:20px 0">Varukorgen är tom.</p>`;
+  const tot = cart.reduce((s,c)=>s+byId(c.id).price,0);
+  document.getElementById("cartTotal").textContent = kr(tot);
+  document.getElementById("shipMsg").innerHTML = pin("cartship") + (n? (cart.some(c=>c.status==='pre') && cart.some(c=>c.status==='in') ? "Du har både lagervaror och förbeställning – de skickas var för sig." : "Leveransdatum visas per klänning nedan.") : "Snabb leverans och 14 dagars öppet köp");
+  const ups = P.filter(p=>!cart.some(c=>c.id===p.id)).slice(0,4);
+  document.getElementById("upsell").innerHTML = pin("upsell") + `<b>Komplettera looken</b><div class="ups">${ups.map(p=>`<a href="#/p/${p.id}" onclick="closeCart()"><img src="${img(p.imgs[0],300)}" alt="">${p.name} · ${kr(p.price)}</a>`).join("")}</div>`;
+}
+function toggleWish(id,btn){
+  wish.has(id)?wish.delete(id):wish.add(id); btn.classList.toggle("on");
+  const b = document.getElementById("wishCount"); b.textContent = wish.size; b.style.display = wish.size?"grid":"none";
+  toast(wish.has(id)?"Sparad i din önskelista":"Borttagen från önskelistan");
+}
+function openCart(){ document.body.classList.add("cart-open"); document.getElementById("cart").classList.add("on"); document.getElementById("bg").classList.add("on"); decoratePins(); }
+function closeCart(){ document.body.classList.remove("cart-open"); document.getElementById("cart").classList.remove("on"); document.getElementById("bg").classList.remove("on"); }
+function toggleMenu(on){ document.getElementById("mnav").classList.toggle("on",on); document.getElementById("bg").classList.toggle("on",on); }
+let tt; function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),2600); }
+function toggleAnnot(){ document.body.classList.toggle("annot"); decoratePins(); }
+
+/* mega menu colours */
+document.getElementById("megaColors").innerHTML = Object.keys(COLORS).slice(0,9).map(c=>`<a href="#/c/balklanningar"><span class="swatch-dot" style="background:${COLORS[c]}"></span>${c}</a>`).join("");
+document.getElementById("megaPromo").style.backgroundImage = `url('${img("IMG-1732.png",600)}')`;
+document.getElementById("megaPromo2").style.backgroundImage = `url('${img("6CEDB103-21E8-439A-9497-D18589384E5D.jpg",600)}')`;
+
+/* router */
+function route(){
+  const h = location.hash.replace(/^#/,"") || "/";
+  const [path, qs] = h.split("?");
+  const params = new URLSearchParams(qs||"");
+  const parts = path.split("/").filter(Boolean);
+  document.body.classList.remove("pdp-view");
+  document.getElementById("stickyAtc").classList.remove("on");
+  if(!parts.length) home();
+  else if(parts[0]==="c") collection(parts[1], params);
+  else if(parts[0]==="p") product(parts[1]);
+  else if(parts[0]==="info") page("info");
+  else page(parts[0]);
+  window.scrollTo(0,0);
+  decoratePins();
+}
+function setHH(){ document.documentElement.style.setProperty("--hh", document.querySelector("header.site").offsetHeight + "px"); }
+addEventListener("resize", setHH); setHH();
+addEventListener("hashchange", route);
+addEventListener("scroll", ()=>{ const s=document.getElementById("stickyAtc"); if(document.body.classList.contains("pdp-view")) s.classList.toggle("on", scrollY>650); }, {passive:true});
+renderCart();
+route();
+</script>
+</body>
+</html>
